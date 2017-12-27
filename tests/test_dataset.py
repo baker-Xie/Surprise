@@ -69,7 +69,7 @@ def test_split():
 
     # Test the shuffle parameter
     # Make sure data has not been shuffled. If not shuffled, the users in the
-    # testsets are be 0, 1, 2... 4 (in that order).
+    # testsets are 0, 1, 2... 4 (in that order).
     data.split(n_folds=5, shuffle=False)
     users = [int(testset[0][0][-1]) for (_, testset) in data.folds()]
     assert users == list(range(5))
