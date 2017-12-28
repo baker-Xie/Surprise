@@ -2,29 +2,30 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from itertools import chain
 from math import ceil, floor
+import numbers
 
 import numpy as np
 
 
-def get_rng(seed):
-    # if seed is None, use RandomState singleton from numpy
-    # else use RandomState initialized with the seed. This guaranties
-    # several calls to kf.split() yield the same splits when seed is
-    # not None.
-    if seed is None:
-        rng = np.random.mtrand._rand
-    else:
-        rng = np.random.RandomState(seed)
+def get_rng(random_state):
+    # if random_state is None, use RandomState singleton from numpy.
+    # Else if it's an integer, consider it's a seed and initialized an rng with
+    # that seed. If it's already an rng, return it.
+    if random_state is None:
+        return np.random.mtrand._rand
+    elif isinstance(random_state, (numbers.Integral, np.integer)):
+        return np.random.RandomState(random_state)
+    if isinstance(random_state, np.random.RandomState):
+        return random_state
 
-    return rng
 
 class KFold():
 
-    def __init__(self, n_splits=5, seed=None, shuffle=True):
+    def __init__(self, n_splits=5, random_state=None, shuffle=True):
 
         self.n_splits = n_splits
         self.shuffle = shuffle
-        self.seed = seed
+        self.random_state = random_state
 
     def split(self, data):
 
@@ -36,7 +37,7 @@ class KFold():
         indices = np.arange(len(data.raw_ratings))
 
         if self.shuffle:
-            get_rng(self.seed).shuffle(indices)
+            get_rng(self.random_state).shuffle(indices)
 
         start, stop = 0, 0
         for fold_i in range(self.n_splits):
@@ -54,12 +55,13 @@ class KFold():
 
             yield trainset, testset
 
+
 class ShuffleSplit():
     '''Note: setting shuffle to false defeats the purpose of ShuffleSplit but
     it's useful for train_test_split.'''
 
-    def __init__(self, n_splits=5, test_size=.2, train_size=None, seed=None,
-                 shuffle=True):
+    def __init__(self, n_splits=5, test_size=.2, train_size=None,
+                 random_state=None, shuffle=True):
 
         if n_splits <= 0:
             raise ValueError('n_splits = {0} should be strictly greater than '
@@ -75,7 +77,7 @@ class ShuffleSplit():
         self.n_splits = n_splits
         self.test_size = test_size
         self.train_size = train_size
-        self.seed = seed
+        self.random_state = random_state
         self.shuffle = shuffle
 
     def validate_train_test_sizes(self, test_size, train_size, n_ratings):
@@ -111,7 +113,7 @@ class ShuffleSplit():
 
         test_size, train_size = self.validate_train_test_sizes(
             self.test_size, self.train_size, len(data.raw_ratings))
-        rng = get_rng(self.seed)
+        rng = get_rng(self.random_state)
 
         for _ in range(self.n_splits):
 
@@ -131,8 +133,26 @@ class ShuffleSplit():
             yield trainset, testset
 
 
-def train_test_split(data, test_size=.2, train_size=None, seed=None,
+def train_test_split(data, test_size=.2, train_size=None, random_state=None,
                      shuffle=True):
     ss = ShuffleSplit(n_splits=1, test_size=test_size, train_size=train_size,
-                      seed=seed, shuffle=shuffle)
+                      random_state=random_state, shuffle=shuffle)
     return next(ss.split(data))
+
+
+class RepeatedKFold():
+
+    def __init__(self, n_splits=5, n_repeats=10, random_state=None):
+
+        self.n_repeats = n_repeats
+        self.random_state = random_state
+        self.n_splits = n_splits
+
+    def split(self, data):
+
+        rng = get_rng(self.random_state)
+
+        for _ in range(self.n_repeats):
+            cv = KFold(n_splits=self.n_splits, random_state=rng, shuffle=True)
+            for trainset, testset in cv.split(data):
+                yield trainset, testset
