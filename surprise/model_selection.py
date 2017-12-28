@@ -3,6 +3,9 @@ from __future__ import (absolute_import, division, print_function,
 from itertools import chain
 from math import ceil, floor
 import numbers
+from collections import defaultdict
+
+from six import iteritems
 
 import numpy as np
 
@@ -156,3 +159,35 @@ class RepeatedKFold():
             cv = KFold(n_splits=self.n_splits, random_state=rng, shuffle=True)
             for trainset, testset in cv.split(data):
                 yield trainset, testset
+
+
+class LeaveOneOut():
+
+    def __init__(self, n_splits=5, random_state=None):
+
+        self.n_splits = n_splits
+        self.random_state = random_state
+
+    def split(self, data):
+
+        user_ratings = defaultdict(list)
+        for uid, iid, r_ui, _ in data.raw_ratings:
+            user_ratings[uid].append((uid, iid, r_ui, None))
+
+        rng = get_rng(self.random_state)
+
+        for _ in range(self.n_splits):
+            raw_trainset, raw_testset = [], []
+            for uid, ratings in iteritems(user_ratings):
+                i = rng.randint(0, len(ratings))
+                raw_testset.append(ratings[i])
+                raw_trainset += [rating for (j, rating) in enumerate(ratings)
+                                 if j != i]
+
+            if not raw_trainset:
+                raise ValueError('Each user only has one rating. Cannot '
+                                 'Run LOO cross-validation')
+            trainset = data.construct_trainset(raw_trainset)
+            testset = data.construct_testset(raw_testset)
+
+            yield trainset, testset

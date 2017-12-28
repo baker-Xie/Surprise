@@ -1,10 +1,12 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 import os
-
-import pytest
 from copy import copy
 import numpy as np
+from collections import Counter
+from six import itervalues
+
+import pytest
 
 from surprise import Dataset
 from surprise import Reader
@@ -12,6 +14,7 @@ from surprise import KFold
 from surprise import ShuffleSplit
 from surprise import RepeatedKFold
 from surprise import train_test_split
+from surprise import LeaveOneOut
 
 
 np.random.seed(1)
@@ -258,3 +261,40 @@ def test_RepeatedCV():
     testsets_a = list(testset for (_, testset) in rkf.split(data))
     testsets_b = list(testset for (_, testset) in rkf.split(data))
     assert testsets_a != testsets_b
+
+
+def test_LeaveOneOut():
+
+    reader = Reader(line_format='user item rating', sep=' ', skip_lines=3,
+                    rating_scale=(1, 5))
+    custom_dataset_path = (os.path.dirname(os.path.realpath(__file__)) +
+                           '/custom_dataset')
+    data = Dataset.load_from_file(file_path=custom_dataset_path, reader=reader)
+
+    loo = LeaveOneOut()
+    with pytest.raises(ValueError):
+        next(loo.split(data))  # Each user only has 1 item
+
+    reader = Reader('ml-100k')
+    custom_dataset_path = (os.path.dirname(os.path.realpath(__file__)) +
+                           '/u1_ml100k_test')
+    data = Dataset.load_from_file(file_path=custom_dataset_path, reader=reader)
+
+    # Test random_state parameter
+    # If random_state is None, you get different split each time (conditioned
+    # by rng of course)
+    loo = LeaveOneOut(random_state=None)
+    testsets_a = [testset for (_, testset) in loo.split(data)]
+    testsets_b = [testset for (_, testset) in loo.split(data)]
+    assert testsets_a != testsets_b
+    # Repeated called to split when random_state is set lead to the same folds
+    loo = LeaveOneOut(random_state=1)
+    testsets_a = [testset for (_, testset) in loo.split(data)]
+    testsets_b = [testset for (_, testset) in loo.split(data)]
+    assert testsets_a == testsets_b
+
+    # Make sure only one rating per user is present in the testset
+    loo = LeaveOneOut()
+    for _, testset in loo.split(data):
+        cnt = Counter([uid for (uid, _, _) in testset])
+        assert all(val == 1 for val in itervalues(cnt))
