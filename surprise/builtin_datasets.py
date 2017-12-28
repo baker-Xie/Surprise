@@ -1,3 +1,9 @@
+'''This module contains built-in datasets that can be automatically
+downloaded.'''
+
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
 from six.moves.urllib.request import urlretrieve
 import zipfile
 from collections import namedtuple

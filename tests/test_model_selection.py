@@ -1,0 +1,223 @@
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+import os
+from math import floor, ceil
+
+import pytest
+from copy import copy
+import numpy as np
+
+from surprise import Dataset
+from surprise import Reader
+from surprise import KFold
+from surprise import ShuffleSplit
+from surprise import train_test_split
+
+
+np.random.seed(1)
+
+
+def test_KFold():
+
+    reader = Reader(line_format='user item rating', sep=' ', skip_lines=3,
+                    rating_scale=(1, 5))
+    custom_dataset_path = (os.path.dirname(os.path.realpath(__file__)) +
+                           '/custom_dataset')
+    data = Dataset.load_from_file(file_path=custom_dataset_path, reader=reader)
+
+    # Test n_folds parameter
+    kf = KFold(n_splits=5)
+    assert len(list(kf.split(data))) == 5
+
+    with pytest.raises(ValueError):
+        kf = KFold(n_splits=10)
+        next(kf.split(data))  # Too big (greater than number of ratings)
+
+    with pytest.raises(ValueError):
+        kf = KFold(n_splits=1)
+        next(kf.split(data))  # Too low (must be >= 2)
+
+    # Make sure data has not been shuffled. If not shuffled, the users in the
+    # testsets are 0, 1, 2... 4 (in that order).
+    kf = KFold(n_splits=5, shuffle=False)
+    users = [int(testset[0][0][-1]) for (_, testset) in kf.split(data)]
+    assert users == list(range(5))
+
+    # Make sure that when called two times without shuffling, folds are the
+    # same.
+    kf = KFold(n_splits=5, shuffle=False)
+    testsets_a = [testset for (_, testset) in kf.split(data)]
+    testsets_b = [testset for (_, testset) in kf.split(data)]
+    assert testsets_a == testsets_b
+    # test once again with another KFold instance
+    kf = KFold(n_splits=5, shuffle=False)
+    testsets_a = [testset for (_, testset) in kf.split(data)]
+    assert testsets_a == testsets_b
+
+    # We'll now shuffle b and check that folds are different.
+    # (this is conditioned by seed setting at the beginning of file)
+    kf = KFold(n_splits=5, seed=None, shuffle=True)
+    testsets_b = [testset for (_, testset) in kf.split(data)]
+    assert testsets_a != testsets_b
+    # test once again: two calls to kf.split make different splits when
+    # seed=None
+    testsets_a = [testset for (_, testset) in kf.split(data)]
+    assert testsets_a != testsets_b
+
+    # Make sure that folds are the same when same KFold instance is used with
+    # suffle is True but seed is set to some value
+    kf = KFold(n_splits=5, seed=1, shuffle=True)
+    testsets_a = [testset for (_, testset) in kf.split(data)]
+    testsets_b = [testset for (_, testset) in kf.split(data)]
+    assert testsets_a == testsets_b
+
+    # Make sure raw ratings are not shuffled by KFold
+    old_raw_ratings = copy(data.raw_ratings)
+    kf = KFold(n_splits=5, shuffle=True)
+    next(kf.split(data))
+    assert old_raw_ratings == data.raw_ratings
+
+    # Make sure kf.split() and the old data.split() have the same folds.
+    np.random.seed(3)
+    data.split(2, shuffle=True)
+    testsets_a = [testset for (_, testset) in data.folds()]
+    kf = KFold(n_splits=2, seed=3, shuffle=True)
+    testsets_b = [testset for (_, testset) in kf.split(data)]
+
+
+def test_ShuffleSplit():
+
+    reader = Reader(line_format='user item rating', sep=' ', skip_lines=3,
+                    rating_scale=(1, 5))
+    custom_dataset_path = (os.path.dirname(os.path.realpath(__file__)) +
+                           '/custom_dataset')
+    data = Dataset.load_from_file(file_path=custom_dataset_path, reader=reader)
+
+    with pytest.raises(ValueError):
+        ss = ShuffleSplit(n_splits=0)
+
+    with pytest.raises(ValueError):
+        ss = ShuffleSplit(test_size=10)
+        next(ss.split(data))
+
+    with pytest.raises(ValueError):
+        ss = ShuffleSplit(train_size=10)
+        next(ss.split(data))
+
+    with pytest.raises(ValueError):
+        ss = ShuffleSplit(test_size=3, train_size=3)
+        next(ss.split(data))
+
+    with pytest.raises(ValueError):
+        ss = ShuffleSplit(test_size=3, train_size=0)
+        next(ss.split(data))
+
+    with pytest.raises(ValueError):
+        ss = ShuffleSplit(test_size=0, train_size=3)
+        next(ss.split(data))
+
+    # No need to cover the entire dataset
+    ss = ShuffleSplit(test_size=1, train_size=1)
+    next(ss.split(data))
+
+    # test test_size to int and train_size to None (complement)
+    ss = ShuffleSplit(test_size=1)
+    assert all(len(testset) == 1 for (_, testset) in ss.split(data))
+    assert all(trainset.n_ratings == 4 for (trainset, _) in ss.split(data))
+
+    # test test_size to float and train_size to None (complement)
+    ss = ShuffleSplit(test_size=.2)  # 20% of 5 = 1
+    assert all(len(testset) == 1 for (_, testset) in ss.split(data))
+    assert all(trainset.n_ratings == 4 for (trainset, _) in ss.split(data))
+
+    # test test_size to int and train_size to int
+    ss = ShuffleSplit(test_size=2, train_size=2)
+    assert all(len(testset) == 2 for (_, testset) in ss.split(data))
+    assert all(trainset.n_ratings == 2 for (trainset, _) in ss.split(data))
+
+    # test test_size to None (complement) and train_size to int
+    ss = ShuffleSplit(test_size=None, train_size=2)
+    assert all(len(testset) == 3 for (_, testset) in ss.split(data))
+    assert all(trainset.n_ratings == 2 for (trainset, _) in ss.split(data))
+
+    # test test_size to None (complement) and train_size to float
+    ss = ShuffleSplit(test_size=None, train_size=.2)
+    assert all(len(testset) == 4 for (_, testset) in ss.split(data))
+    assert all(trainset.n_ratings == 1 for (trainset, _) in ss.split(data))
+
+    # test default parameters: 5 splits, test_size = .2, train_size = None
+    ss = ShuffleSplit()
+    assert len(list(ss.split(data))) == 5
+    assert all(len(testset) == 1 for (_, testset) in ss.split(data))
+    assert all(trainset.n_ratings == 4 for (trainset, _) in ss.split(data))
+
+    # Test seed parameter
+    # If seed is None, you get different split each time (conditioned by rng
+    # of course)
+    ss = ShuffleSplit(seed=None)
+    testsets_a = [testset for (_, testset) in ss.split(data)]
+    testsets_b = [testset for (_, testset) in ss.split(data)]
+    assert testsets_a != testsets_b
+    # Repeated called to split when seed is se lead to the same folds
+    ss = ShuffleSplit(seed=1)
+    testsets_a = [testset for (_, testset) in ss.split(data)]
+    testsets_b = [testset for (_, testset) in ss.split(data)]
+    assert testsets_a == testsets_b
+
+    # Test shuffle parameter, if False then splits are the same regardless of
+    # seed.
+    ss = ShuffleSplit(seed=1, shuffle=False)
+    testsets_a = [testset for (_, testset) in ss.split(data)]
+    testsets_b = [testset for (_, testset) in ss.split(data)]
+    assert testsets_a == testsets_b
+
+
+def test_train_test_split():
+    reader = Reader(line_format='user item rating', sep=' ', skip_lines=3,
+                    rating_scale=(1, 5))
+    custom_dataset_path = (os.path.dirname(os.path.realpath(__file__)) +
+                           '/custom_dataset')
+    data = Dataset.load_from_file(file_path=custom_dataset_path, reader=reader)
+
+    # test test_size to int and train_size to None (complement)
+    trainset, testset = train_test_split(data, test_size=2, train_size=None)
+    assert len(testset) == 2
+    assert trainset.n_ratings == 3
+
+    # test test_size to float and train_size to None (complement)
+    trainset, testset = train_test_split(data, test_size=.2, train_size=None)
+    assert len(testset) == 1
+    assert trainset.n_ratings == 4
+
+    # test test_size to int and train_size to int
+    trainset, testset = train_test_split(data, test_size=2, train_size=3)
+    assert len(testset) == 2
+    assert trainset.n_ratings == 3
+
+    # test test_size to None (complement) and train_size to int
+    trainset, testset = train_test_split(data, test_size=None, train_size=2)
+    assert len(testset) == 3
+    assert trainset.n_ratings == 2
+
+    # test test_size to None (complement) and train_size to float
+    trainset, testset = train_test_split(data, test_size=None, train_size=.2)
+    assert len(testset) == 4
+    assert trainset.n_ratings == 1
+
+    # Test seed parameter
+    # If seed is None, you get different split each time (conditioned by rng
+    # of course)
+    _, testset_a = train_test_split(data, seed=None)
+    _, testset_b = train_test_split(data, seed=None)
+    assert testset_a != testset_b
+
+    # Repeated called to split when seed is se lead to the same folds
+    _, testset_a = train_test_split(data, seed=1)
+    _, testset_b = train_test_split(data, seed=1)
+    assert testset_a == testset_b
+
+    # Test shuffle parameter, if False then splits are the same regardless of
+    # seed.
+    _, testset_a = train_test_split(data, seed=1, shuffle=None)
+    _, testset_b = train_test_split(data, seed=1, shuffle=None)
+    assert testset_a == testset_b
