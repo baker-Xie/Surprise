@@ -6,7 +6,7 @@ import pytest
 from surprise import Dataset
 from surprise import Reader
 from surprise import AlgoBase
-from surprise import KFold
+from surprise.model_selection import KFold
 
 
 data_file = os.path.join(os.path.dirname(__file__), './u1_ml100k_train')

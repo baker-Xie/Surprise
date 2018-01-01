@@ -1,19 +1,26 @@
 TODO
 ====
 
-* Allow to discount similarities (see aggarwal)
+- CV iterators:
+  - evaluate -> rewrite to use CV iterators. Rename it into cross_validate.
+  - Same for GridSearch. Keep it in a model_selection module like scikit-learn
+    so that we can keep the old deprecated version. 
+  - Make cross validation parallel with joblib
+  - Change examples so they use CV iterators
+  - Write comments, docstring and update all docs
+  - Update main
+  - All the deprecation warnings in the tests should be caught. Looks like this
+    messes up tests in Python 2??
+  - Update README example
+
+
 * Allow incremental updates for some algorithms
-* Profile code (mostly cython) to see what could be optimized
-
-Maybe, Maybe not
-----------------
-
-* allow a back up algorithm  when prediction is impossible. Right now it's just
-  the mean rating that is predicted. Maybe user would want to choose it.
 
 Done:
 -----
 
+* CV iterators:
+  - Write basic CV iterators
 * Allow to change data folder from env variable
 * Complete FAQ
 * Change the dumping machinery to be more consistent 

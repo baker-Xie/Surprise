@@ -23,20 +23,13 @@ from .builtin_datasets import get_dataset_dir
 from .evaluate import evaluate
 from .evaluate import print_perf
 from .evaluate import GridSearch
-from .model_selection import KFold
-from .model_selection import ShuffleSplit
-from .model_selection import train_test_split
-from .model_selection import RepeatedKFold
-from .model_selection import LeaveOneOut
-from .model_selection import PredefinedKFold
+from . import model_selection
 from . import dump
 
 __all__ = ['AlgoBase', 'NormalPredictor', 'BaselineOnly', 'KNNBasic',
            'KNNWithMeans', 'KNNBaseline', 'SVD', 'SVDpp', 'NMF', 'SlopeOne',
            'CoClustering', 'PredictionImpossible', 'Prediction', 'Dataset',
            'Reader', 'Trainset', 'evaluate', 'print_perf', 'GridSearch',
-           'dump', 'KNNWithZScore', 'get_dataset_dir', 'KFold', 'ShuffleSplit',
-           'train_test_split', 'RepeatedKFold', 'LeaveOneOut',
-           'PredefinedKFold']
+           'dump', 'KNNWithZScore', 'get_dataset_dir', 'model_selection']
 
 __version__ = get_distribution('scikit-surprise').version

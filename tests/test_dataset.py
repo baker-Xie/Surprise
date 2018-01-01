@@ -52,11 +52,13 @@ def test_no_call_to_split():
                            '/custom_dataset')
     data = Dataset.load_from_file(file_path=custom_dataset_path, reader=reader)
 
-    assert len(list(data.folds())) == 5
+    with pytest.warns(UserWarning):
+        assert len(list(data.folds())) == 5
 
     # make sure data has been shuffled. If not shuffled, the users in the
     # testsets would be 0, 1, 2... 4 (in that order).
-    users = [int(testset[0][0][-1]) for (_, testset) in data.folds()]
+    with pytest.warns(UserWarning):
+        users = [int(testset[0][0][-1]) for (_, testset) in data.folds()]
     assert users != list(range(5))
 
 

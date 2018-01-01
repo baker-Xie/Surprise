@@ -10,12 +10,12 @@ import pytest
 
 from surprise import Dataset
 from surprise import Reader
-from surprise import KFold
-from surprise import ShuffleSplit
-from surprise import RepeatedKFold
-from surprise import train_test_split
-from surprise import LeaveOneOut
-from surprise import PredefinedKFold
+from surprise.model_selection import KFold
+from surprise.model_selection import ShuffleSplit
+from surprise.model_selection import RepeatedKFold
+from surprise.model_selection import train_test_split
+from surprise.model_selection import LeaveOneOut
+from surprise.model_selection import PredefinedKFold
 
 
 np.random.seed(1)
