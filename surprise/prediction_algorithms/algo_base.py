@@ -48,6 +48,8 @@ class AlgoBase(object):
         '''Deprecated method: use :meth:`fit() <AlgoBase.fit>`
         instead.'''
 
+        warnings.warn('train() is Deprecated. Use fit() instead', UserWarning)
+
         self.skip_train = True
         self.fit(trainset)
 

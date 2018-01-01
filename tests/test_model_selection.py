@@ -15,6 +15,7 @@ from surprise import ShuffleSplit
 from surprise import RepeatedKFold
 from surprise import train_test_split
 from surprise import LeaveOneOut
+from surprise import PredefinedKFold
 
 
 np.random.seed(1)
@@ -82,8 +83,9 @@ def test_KFold():
 
     # Make sure kf.split() and the old data.split() have the same folds.
     np.random.seed(3)
-    data.split(2, shuffle=True)
-    testsets_a = [testset for (_, testset) in data.folds()]
+    with pytest.warns(UserWarning):
+        data.split(2, shuffle=True)
+        testsets_a = [testset for (_, testset) in data.folds()]
     kf = KFold(n_splits=2, random_state=3, shuffle=True)
     testsets_b = [testset for (_, testset) in kf.split(data)]
 
@@ -298,3 +300,25 @@ def test_LeaveOneOut():
     for _, testset in loo.split(data):
         cnt = Counter([uid for (uid, _, _) in testset])
         assert all(val == 1 for val in itervalues(cnt))
+
+
+def test_PredifinedKFold():
+
+    reader = Reader(line_format='user item rating', sep=' ', skip_lines=3,
+                    rating_scale=(1, 5))
+
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    folds_files = [(current_dir + '/custom_train',
+                    current_dir + '/custom_test')]
+
+    data = Dataset.load_from_folds(folds_files=folds_files, reader=reader)
+
+    # Make sure rating files are read correctly
+    pkf = PredefinedKFold()
+    trainset, testset = next(pkf.split(data))
+    assert trainset.n_ratings == 6
+    assert len(testset) == 3
+
+    # Make sure pkf returns the same folds as the deprecated data.folds()
+    trainset_, testset_ = next(data.folds())
+    assert testset_ == testset

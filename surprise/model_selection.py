@@ -33,8 +33,9 @@ class KFold():
     def split(self, data):
 
         if self.n_splits > len(data.raw_ratings) or self.n_splits < 2:
-            raise ValueError('Incorrect value for n_splits. Must be >=2 and '
-                             'less than the number or entries')
+            raise ValueError('Incorrect value for n_splits={0}. '
+                             'Must be >=2 and less than the number '
+                             'of ratings'.format(len(data.raw_ratings)))
 
         # We use indices to avoid shuffling the original data.raw_ratings list.
         indices = np.arange(len(data.raw_ratings))
@@ -187,6 +188,20 @@ class LeaveOneOut():
             if not raw_trainset:
                 raise ValueError('Each user only has one rating. Cannot '
                                  'Run LOO cross-validation')
+            trainset = data.construct_trainset(raw_trainset)
+            testset = data.construct_testset(raw_testset)
+
+            yield trainset, testset
+
+
+class PredefinedKFold():
+
+    def split(self, data):
+
+        for train_file, test_file in data.folds_files:
+
+            raw_trainset = data.read_ratings(train_file)
+            raw_testset = data.read_ratings(test_file)
             trainset = data.construct_trainset(raw_trainset)
             testset = data.construct_testset(raw_testset)
 

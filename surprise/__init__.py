@@ -28,6 +28,7 @@ from .model_selection import ShuffleSplit
 from .model_selection import train_test_split
 from .model_selection import RepeatedKFold
 from .model_selection import LeaveOneOut
+from .model_selection import PredefinedKFold
 from . import dump
 
 __all__ = ['AlgoBase', 'NormalPredictor', 'BaselineOnly', 'KNNBasic',
@@ -35,6 +36,7 @@ __all__ = ['AlgoBase', 'NormalPredictor', 'BaselineOnly', 'KNNBasic',
            'CoClustering', 'PredictionImpossible', 'Prediction', 'Dataset',
            'Reader', 'Trainset', 'evaluate', 'print_perf', 'GridSearch',
            'dump', 'KNNWithZScore', 'get_dataset_dir', 'KFold', 'ShuffleSplit',
-           'train_test_split', 'RepeatedKFold', 'LeaveOneOut']
+           'train_test_split', 'RepeatedKFold', 'LeaveOneOut',
+           'PredefinedKFold']
 
 __version__ = get_distribution('scikit-surprise').version

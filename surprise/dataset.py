@@ -32,6 +32,7 @@ import sys
 import os
 import itertools
 import random
+import warnings
 
 from six.moves import input
 from six.moves import range
@@ -182,6 +183,10 @@ class Dataset:
             tuple: :class:`Trainset <surprise.Trainset>` and testset
             of current fold.
         """
+
+        warnings.warn('Using data.split() or using load_from_folds() '
+                      'without using a CV iterator is now deprecated. ',
+                      UserWarning)
 
         for raw_trainset, raw_testset in self.raw_folds():
             trainset = self.construct_trainset(raw_trainset)
