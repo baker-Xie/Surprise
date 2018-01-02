@@ -322,7 +322,7 @@ class DatasetAutoFolds(Dataset):
         """Split the dataset into folds for future cross-validation.
 
         If you forget to call :meth:`split`, the dataset will be automatically
-        shuffled and split for 5-folds cross-validation.
+        shuffled and split for 5-fold cross-validation.
 
         You can obtain repeatable splits over your all your experiments by
         seeding the RNG: ::
