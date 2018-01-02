@@ -2,18 +2,24 @@ TODO
 ====
 
 - CV iterators:
-  - evaluate -> rewrite to use CV iterators. Rename it into cross_validate.
   - Same for GridSearch. Keep it in a model_selection module like scikit-learn
     so that we can keep the old deprecated version. 
   - Make cross validation parallel with joblib
+  - handle the cv_results attribute for grid search
+  - (re)write all verbose settings for gridsearch and cross_validate
   - Change examples so they use CV iterators
   - Write comments, docstring and update all docs
   - Update main
   - All the deprecation warnings in the tests should be caught. Looks like this
     messes up tests in Python 2??
+  - Add deprecation warnings for evaluate and GridSearch()
   - Update README example
 
 
+* all algorithms using random initialization should allow to define
+  random_state. This is paramount for having correct gridsearch results.
+* Make all fit methods (for algo and GridSearch) return self. Update docs on
+  building custom algorithms.
 * Allow incremental updates for some algorithms
 
 Done:
@@ -21,6 +27,7 @@ Done:
 
 * CV iterators:
   - Write basic CV iterators
+  - evaluate -> rewrite to use CV iterators. Rename it into cross_validate.
 * Allow to change data folder from env variable
 * Complete FAQ
 * Change the dumping machinery to be more consistent 

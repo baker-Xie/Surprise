@@ -2,17 +2,21 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 import time
 from collections import defaultdict
-import os
 
 import numpy as np
 
-from . import KFold
+from .split import get_cv
 from .. import accuracy
-from ..dump import dump
 
 
 def cross_validate(algo, data, measures=['rmse', 'mae'], cv=None,
                    with_dump=False, dump_dir=None, verbose=1):
+
+    measures = [m.lower() for m in measures]
+
+    cv = get_cv(cv)
+
+    ret = defaultdict(list)
 
     if verbose:
         print('Evaluating {0} of algorithm {1}.'.format(
@@ -20,45 +24,18 @@ def cross_validate(algo, data, measures=['rmse', 'mae'], cv=None,
               algo.__class__.__name__))
         print()
 
-    if cv is None:
-        cv = KFold(n_splits=5)
-
-    ret = defaultdict(list)
     for fold_i, (trainset, testset) in enumerate(cv.split(data)):
 
         if verbose:
             print('-' * 12)
             print('Fold ' + str(fold_i + 1))
 
-        # train and test algorithm. Keep all rating predictions in a list
-        start_time = time.time()
-        algo.fit(trainset)
-        fit_time = time.time() - start_time
-        predictions = algo.test(testset, verbose=(verbose == 2))
-        test_time = time.time() - fit_time
-
+        test_measures, fit_time, test_time = fit_and_score(algo, trainset,
+                                                           testset, measures)
         ret['fit_time'].append(fit_time)
         ret['test_time'].append(test_time)
-
-        # compute needed performance statistics
-        for measure in measures:
-            f = getattr(accuracy, measure.lower())
-            ret['test_' + measure].append(f(predictions, verbose=verbose))
-
-        if with_dump:
-
-            if dump_dir is None:
-                dump_dir = os.path.join(get_dataset_dir(), 'dumps/')
-
-            if not os.path.exists(dump_dir):
-                os.makedirs(dump_dir)
-
-            date = time.strftime('%y%m%d-%Hh%Mm%S', time.localtime())
-            file_name = date + '-' + algo.__class__.__name__
-            file_name += '-fold{0}'.format(fold_i + 1)
-            file_name = os.path.join(dump_dir, file_name)
-
-            dump(file_name, predictions, trainset, algo)
+        for m in measures:
+            ret['test_' + m].append(test_measures[m])
 
     if verbose:
         print('-' * 12)
@@ -70,3 +47,19 @@ def cross_validate(algo, data, measures=['rmse', 'mae'], cv=None,
         print('-' * 12)
 
     return ret
+
+
+def fit_and_score(algo, trainset, testset, measures):
+
+    start_time = time.time()
+    algo.fit(trainset)
+    fit_time = time.time() - start_time
+    predictions = algo.test(testset)
+    test_time = time.time() - fit_time
+
+    test_measures = dict()
+    for measure in measures:
+        f = getattr(accuracy, measure.lower())
+        test_measures[measure] = f(predictions, verbose=0)
+
+    return test_measures, fit_time, test_time

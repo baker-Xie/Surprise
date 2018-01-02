@@ -20,6 +20,22 @@ def get_rng(random_state):
         return np.random.RandomState(random_state)
     if isinstance(random_state, np.random.RandomState):
         return random_state
+    raise ValueError('Wrong random state. Expecting None, an int or a numpy '
+                     'RandomState instance, got a '
+                     '{}'.format(type(random_state)))
+
+
+def get_cv(cv):
+
+    if cv is None:
+        return KFold(n_splits=5)
+    if isinstance(cv, numbers.Integral):
+        return KFold(n_splits=cv)
+    if hasattr(cv, 'split') and not isinstance(cv, str):  # str have split()
+        return cv
+
+    raise ValueError('Wrong CV object. Expecting None, an int or CV iterator, '
+                     'got a {}'.format(type(cv)))
 
 
 class KFold():
