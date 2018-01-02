@@ -6,6 +6,7 @@ import numbers
 from collections import defaultdict
 
 from six import iteritems
+from six import string_types
 
 import numpy as np
 
@@ -31,8 +32,8 @@ def get_cv(cv):
         return KFold(n_splits=5)
     if isinstance(cv, numbers.Integral):
         return KFold(n_splits=cv)
-    if hasattr(cv, 'split') and not isinstance(cv, str):  # str have split()
-        return cv
+    if hasattr(cv, 'split') and not isinstance(cv, string_types):
+        return cv  # str have split
 
     raise ValueError('Wrong CV object. Expecting None, an int or CV iterator, '
                      'got a {}'.format(type(cv)))
