@@ -322,7 +322,8 @@ def test_PredifinedKFold():
     assert len(testset) == 3
 
     # Make sure pkf returns the same folds as the deprecated data.folds()
-    trainset_, testset_ = next(data.folds())
+    with pytest.warns(UserWarning):
+        trainset_, testset_ = next(data.folds())
     assert testset_ == testset
 
 

@@ -53,7 +53,7 @@ def test_new_style_algo():
         assert algo.cnt == i
 
     algo = CustomAlgoFit()
-    for i, (trainset, testset) in enumerate(data.folds()):
+    for i, (trainset, testset) in enumerate(kf.split(data)):
         with pytest.warns(UserWarning):
             algo.train(trainset)
         predictions = algo.test(testset)
@@ -96,7 +96,7 @@ def test_old_style_algo():
 
     with pytest.warns(UserWarning):
         algo = CustomAlgoTrain()
-    for i, (trainset, testset) in enumerate(data.folds()):
+    for i, (trainset, testset) in enumerate(kf.split(data)):
         with pytest.warns(UserWarning):
             algo.fit(trainset)
         predictions = algo.test(testset)
@@ -112,7 +112,7 @@ def test_old_style_algo():
 
     with pytest.warns(UserWarning):
         algo = CustomAlgoTrain()
-    for i, (trainset, testset) in enumerate(data.folds()):
+    for i, (trainset, testset) in enumerate(kf.split(data)):
         with pytest.warns(UserWarning):
             algo.train(trainset)
         predictions = algo.test(testset)

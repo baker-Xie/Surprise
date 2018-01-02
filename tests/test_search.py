@@ -5,7 +5,6 @@ Module for testing the model_selection.search module.
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 import os
-import random
 
 from surprise import Dataset
 from surprise import Reader
@@ -53,7 +52,7 @@ def test_best_estimator():
 
     # recompute MAE of best_estimator
     mae = cross_validate(best_estimator, data, measures=['MAE'],
-                           cv=PredefinedKFold())['test_mae']
+                         cv=PredefinedKFold())['test_mae']
 
     assert mae == gs.best_score['mae']
 
@@ -70,7 +69,8 @@ def test_same_splits():
 
     # all RMSE should be the same (as param combinations are the same)
     param_grid = {'k': [2, 2], 'min_k': [1, 1]}
-    gs = GridSearchCV(KNNBasic, param_grid, measures=['RMSE'], cv=kf, n_jobs=-1)
+    gs = GridSearchCV(KNNBasic, param_grid, measures=['RMSE'], cv=kf,
+                      n_jobs=-1)
     gs.fit(data)
 
     rmse_scores = [m for m in gs.mean_measures['rmse']]
