@@ -8,6 +8,7 @@ import time
 import os
 from itertools import product
 import random
+import warnings
 
 import numpy as np
 from six import iteritems
@@ -52,6 +53,9 @@ def evaluate(algo, data, measures=['rmse', 'mae'], with_dump=False,
         A dictionary containing measures as keys and lists as values. Each list
         contains one entry per fold.
     """
+
+    warnings.warn('The evaluate() method is deprecated. Please use '
+                  'model_selection.cross_validate() instead.', UserWarning)
 
     performances = CaseInsensitiveDefaultDict(list)
 
@@ -209,6 +213,9 @@ class GridSearch:
 
         self.param_combinations = [dict(zip(self.param_grid, v)) for v in
                                    product(*self.param_grid.values())]
+
+        warnings.warn('The GridSearch() class is deprecated. Please use '
+                      'model_selection.GridSearchCV instead.', UserWarning)
 
     def evaluate(self, data):
         """Runs the grid search on dataset.

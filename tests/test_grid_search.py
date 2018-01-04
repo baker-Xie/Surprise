@@ -32,7 +32,8 @@ def test_grid_search_cv_results():
     """Ensure that the number of parameter combinations is correct."""
     param_grid = {'n_epochs': [1, 2], 'lr_all': [0.002, 0.005],
                   'reg_all': [0.4, 0.6], 'n_factors': [1], 'init_std_dev': [0]}
-    grid_search = GridSearch(SVD, param_grid, n_jobs=1)
+    with pytest.warns(UserWarning):
+        grid_search = GridSearch(SVD, param_grid, n_jobs=1)
     with pytest.warns(UserWarning):
         grid_search.evaluate(data)
     assert len(grid_search.cv_results['params']) == 8
@@ -42,8 +43,9 @@ def test_measure_is_not_case_sensitive():
     """Ensure that all best_* dictionaries are case insensitive."""
     param_grid = {'n_epochs': [1], 'lr_all': [0.002, 0.005],
                   'reg_all': [0.4, 0.6], 'n_factors': [1], 'init_std_dev': [0]}
-    grid_search = GridSearch(SVD, param_grid, measures=['FCP', 'mae', 'rMSE'],
-                             n_jobs=1)
+    with pytest.warns(UserWarning):
+        grid_search = GridSearch(SVD, param_grid, measures=['FCP', 'mae',
+                                                            'rMSE'], n_jobs=1)
     with pytest.warns(UserWarning):
         grid_search.evaluate(data)
     assert grid_search.best_index['fcp'] == grid_search.best_index['FCP']
@@ -56,8 +58,9 @@ def test_best_estimator():
     re-running it)"""
     param_grid = {'n_epochs': [5], 'lr_all': [0.002, 0.005],
                   'reg_all': [0.4, 0.6], 'n_factors': [1], 'init_std_dev': [0]}
-    grid_search = GridSearch(SVD, param_grid, measures=['FCP', 'mae', 'rMSE'],
-                             n_jobs=1)
+    with pytest.warns(UserWarning):
+        grid_search = GridSearch(SVD, param_grid, measures=['FCP', 'mae',
+                                                            'rMSE'], n_jobs=1)
     with pytest.warns(UserWarning):
         grid_search.evaluate(data)
     best_estimator = grid_search.best_estimator['MAE']
@@ -79,8 +82,9 @@ def test_dict_parameters():
                                   'user_based': [False]}
                   }
 
-    grid_search = GridSearch(KNNBaseline, param_grid,
-                             measures=['FCP', 'mae', 'rMSE'], n_jobs=1)
+    with pytest.warns(UserWarning):
+        grid_search = GridSearch(KNNBaseline, param_grid,
+                                 measures=['FCP', 'mae', 'rMSE'], n_jobs=1)
     with pytest.warns(UserWarning):
         grid_search.evaluate(data)
     assert len(grid_search.cv_results['params']) == 32
@@ -96,7 +100,8 @@ def test_same_splits():
 
     # all RMSE should be the same (as param combinations are the same)
     param_grid = {'n_epochs': [1, 1], 'lr_all': [.5, .5]}
-    grid_search = GridSearch(SVD, param_grid, measures=['RMSE'], n_jobs=-1)
+    with pytest.warns(UserWarning):
+        grid_search = GridSearch(SVD, param_grid, measures=['RMSE'], n_jobs=-1)
     grid_search.evaluate(data)
 
     rmse_scores = [s['RMSE'] for s in grid_search.cv_results['scores']]

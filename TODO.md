@@ -8,7 +8,6 @@ TODO
     cross_validate
   - Write comments, docstring and update all docs
   - Update main
-  - Add deprecation warnings for evaluate and GridSearch()
   - Update README example
 
 
@@ -30,6 +29,7 @@ Done:
   - Same for GridSearch. Keep it in a model_selection module like scikit-learn
     so that we can keep the old deprecated version. 
   - Make cross validation parallel with joblib
+  - Add deprecation warnings for evaluate and GridSearch()
 * Allow to change data folder from env variable
 * Complete FAQ
 * Change the dumping machinery to be more consistent 
