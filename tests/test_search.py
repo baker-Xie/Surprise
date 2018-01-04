@@ -48,7 +48,7 @@ def test_best_estimator():
     param_grid = {'n_epochs': [5], 'lr_all': [0.002, 0.005],
                   'reg_all': [0.4, 0.6], 'n_factors': [1], 'init_std_dev': [0]}
     gs = GridSearchCV(SVD, param_grid, measures=['mae'],
-                      cv=PredefinedKFold(), verbose=0)
+                      cv=PredefinedKFold(), joblib_verbose=100)
     gs.fit(data)
     best_estimator = gs.best_estimator['mae']
 

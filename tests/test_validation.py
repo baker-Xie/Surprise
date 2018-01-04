@@ -26,7 +26,7 @@ def test_cross_validate():
     algo = NormalPredictor()
     pkf = ms.PredefinedKFold()
     ret = ms.cross_validate(algo, data, measures=['rmse', 'mae'], cv=pkf,
-                            verbose=2)
+                            verbose=1)
     assert len(ret['test_rmse']) == 1
     assert len(ret['test_mae']) == 1
     assert len(ret['fit_time']) == 1

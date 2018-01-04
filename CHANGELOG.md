@@ -13,6 +13,11 @@ API Changes
 
 * The train() method is now deprecated and replaced by the fit() method (same
   signature). Calls to train() should still work as before.
+* Using data.split() or accessing the data.folds() generator is deprecated and
+  replaced by the use of the more powefull CV iterators.
+* evaluate() is deprecated and  replaced by model_selection.cross_validate(),
+  which is parallel.
+* GridSearch is deprecated and replaced by model_selection.GridSearchCV()
 
 VERSION 1.0.4
 =============

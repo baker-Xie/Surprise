@@ -12,7 +12,7 @@ from .validation import fit_and_score
 
 class GridSearchCV:
     def __init__(self, algo_class, param_grid, measures=['rmse', 'mae'],
-                 cv=None, n_jobs=-1, pre_dispatch='2*n_jobs', verbose=1,
+                 cv=None, n_jobs=-1, pre_dispatch='2*n_jobs',
                  joblib_verbose=0):
 
         self.algo_class = algo_class
@@ -21,7 +21,6 @@ class GridSearchCV:
         self.cv = cv
         self.n_jobs = n_jobs
         self.pre_dispatch = pre_dispatch
-        self.verbose = verbose
         self.joblib_verbose = joblib_verbose
 
         # As sim_options and bsl_options are dictionaries, they require a

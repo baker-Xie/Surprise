@@ -2,7 +2,6 @@ TODO
 ====
 
 - CV iterators:
-  - (re)write all verbose settings for gridsearch and cross_validate
   - Change examples so they use CV iterators and the new gridsearch and
     cross_validate
   - Write comments, docstring and update all docs
@@ -33,6 +32,7 @@ Done:
   - Make cross validation parallel with joblib
   - Add deprecation warnings for evaluate and GridSearch()
   - handle the cv_results attribute for grid search
+  - (re)write all verbose settings for gridsearch and cross_validate
 * Allow to change data folder from env variable
 * Complete FAQ
 * Change the dumping machinery to be more consistent 

@@ -5,13 +5,14 @@ import time
 import numpy as np
 from joblib import Parallel
 from joblib import delayed
+from six import iteritems
 
 from .split import get_cv
 from .. import accuracy
 
 
 def cross_validate(algo, data, measures=['rmse', 'mae'], cv=None, n_jobs=-1,
-                   pre_dispatch='2*n_jobs', verbose=1):
+                   pre_dispatch='2*n_jobs', verbose=0):
 
     measures = [m.lower() for m in measures]
 
@@ -35,16 +36,21 @@ def cross_validate(algo, data, measures=['rmse', 'mae'], cv=None, n_jobs=-1,
     ret['fit_time'] = fit_times
     ret['test_time'] = test_times
 
+    if verbose:
+        print_summary(algo, measures, test_measures, fit_times, test_times,
+                      cv.n_splits)
+
     return ret
 
 
 def fit_and_score(algo, trainset, testset, measures):
 
-    start_time = time.time()
+    start_fit = time.time()
     algo.fit(trainset)
-    fit_time = time.time() - start_time
+    fit_time = time.time() - start_fit
+    start_test = time.time()
     predictions = algo.test(testset)
-    test_time = time.time() - fit_time
+    test_time = time.time() - start_test
 
     test_measures = dict()
     for measure in measures:
@@ -52,3 +58,32 @@ def fit_and_score(algo, trainset, testset, measures):
         test_measures[measure] = f(predictions, verbose=0)
 
     return test_measures, fit_time, test_time
+
+
+def print_summary(algo, measures, test_measures, fit_times, test_times,
+                  n_splits):
+
+    print('Evaluating {0} of algorithm {1} on {2} split(s).'.format(
+          ', '.join((m.upper() for m in measures)),
+          algo.__class__.__name__, n_splits))
+    print()
+
+    row_format = '{:<12}' * (n_splits + 2)
+    s = row_format.format(
+        '',
+        *['Fold {0}'.format(i + 1) for i in range(n_splits)] + ['Mean'])
+    s += '\n'
+    s += '\n'.join(row_format.format(
+        key.upper(),
+        *['{:1.4f}'.format(v) for v in vals] +
+        ['{:1.4f}'.format(np.mean(vals))])
+        for (key, vals) in iteritems(test_measures))
+    s += '\n'
+    s += row_format.format('Fit time',
+                           *['{:.2f}'.format(t) for t in fit_times] +
+                           ['{:.2f}'.format(np.mean(fit_times))])
+    s += '\n'
+    s += row_format.format('Test time',
+                           *['{:.2f}'.format(t) for t in test_times] +
+                           ['{:.2f}'.format(np.mean(test_times))])
+    print(s)
