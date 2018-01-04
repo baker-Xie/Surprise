@@ -2,7 +2,6 @@ TODO
 ====
 
 - CV iterators:
-  - handle the cv_results attribute for grid search
   - (re)write all verbose settings for gridsearch and cross_validate
   - Change examples so they use CV iterators and the new gridsearch and
     cross_validate
@@ -15,7 +14,10 @@ TODO
   random_state. This is paramount for having correct gridsearch results (else
   different initializations are used for the various parameter combinations).
   When done, change tests of these algorithms so that they all use the same
-  seed. Right now tests about different RMSE values are not relevant.
+  seed. Right now tests about different RMSE values are not relevant. Also, use
+  SVD on test file when possible for grid search tests. Right now we use knn on
+  train (test does not have enough ratings for parameters to be impactful) and
+  it's slower.
 * Make all fit methods (for algo and GridSearch) return self. Update docs on
   building custom algorithms.
 * Allow incremental updates for some algorithms
@@ -30,6 +32,7 @@ Done:
     so that we can keep the old deprecated version. 
   - Make cross validation parallel with joblib
   - Add deprecation warnings for evaluate and GridSearch()
+  - handle the cv_results attribute for grid search
 * Allow to change data folder from env variable
 * Complete FAQ
 * Change the dumping machinery to be more consistent 

@@ -215,6 +215,7 @@ class PredefinedKFold():
 
     def split(self, data):
 
+        self.n_splits = len(data.folds_files)
         for train_file, test_file in data.folds_files:
 
             raw_trainset = data.read_ratings(train_file)

@@ -6,6 +6,8 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 import os
 
+import numpy as np
+
 from surprise import Dataset
 from surprise import Reader
 from surprise import SVD
@@ -59,26 +61,65 @@ def test_best_estimator():
 
 def test_same_splits():
     """Ensure that all parameter combinations are tested on the same splits (we
-    check that average RMSE scores are the same, when run on the same set of
-    parameters, which should be enough). We use as much parallelism as
-    possible."""
+    check their RMSE scores are the same once averaged over the splits, which
+    should be enough). We use as much parallelism as possible."""
 
-    data_file = os.path.join(os.path.dirname(__file__), './u1_ml100k_test')
+    data_file = os.path.join(os.path.dirname(__file__), './u1_ml100k_train')
     data = Dataset.load_from_file(data_file, reader=Reader('ml-100k'))
     kf = KFold(3, shuffle=True, random_state=4)
 
     # all RMSE should be the same (as param combinations are the same)
-    param_grid = {'k': [2, 2], 'min_k': [1, 1]}
+    param_grid = {'k': [1, 1], 'min_k': [3, 3]}
     gs = GridSearchCV(KNNBasic, param_grid, measures=['RMSE'], cv=kf,
                       n_jobs=-1)
     gs.fit(data)
 
-    rmse_scores = [m for m in gs.mean_measures['rmse']]
+    rmse_scores = [m for m in gs.cv_results['mean_test_rmse']]
     assert len(set(rmse_scores)) == 1  # assert rmse_scores are all equal
 
     # Note: actually, even when setting random_state=None in kf, the same folds
     # are used because we use product(param_comb, kf.split(...)). However, it's
     # needed to have the same folds when calling fit again:
     gs.fit(data)
-    rmse_scores += [m for m in gs.mean_measures['rmse']]
+    rmse_scores += [m for m in gs.cv_results['mean_test_rmse']]
     assert len(set(rmse_scores)) == 1  # assert rmse_scores are all equal
+
+
+def test_cv_results():
+    '''Test the cv_results attribute'''
+
+    f = os.path.join(os.path.dirname(__file__), './u1_ml100k_train')
+    data = Dataset.load_from_file(f, Reader('ml-100k'))
+    kf = KFold(3, shuffle=True, random_state=4)
+    param_grid = {'k': [1, 10], 'sim_options': {'name': ['msd', 'cosine']}}
+    gs = GridSearchCV(KNNBasic, param_grid, measures=['RMSE', 'mae'], cv=kf)
+    gs.fit(data)
+
+    # test keys split*_test_rmse, mean and std dev.
+    assert gs.cv_results['split0_test_rmse'].shape == (4,)  # 4 param comb.
+    assert gs.cv_results['split1_test_rmse'].shape == (4,)  # 4 param comb.
+    assert gs.cv_results['split2_test_rmse'].shape == (4,)  # 4 param comb.
+    assert gs.cv_results['mean_test_rmse'].shape == (4,)  # 4 param comb.
+    assert np.allclose(gs.cv_results['mean_test_rmse'],
+                       np.mean([gs.cv_results['split0_test_rmse'],
+                                gs.cv_results['split1_test_rmse'],
+                                gs.cv_results['split2_test_rmse']], axis=0))
+    assert np.allclose(gs.cv_results['std_test_rmse'],
+                       np.std([gs.cv_results['split0_test_rmse'],
+                               gs.cv_results['split1_test_rmse'],
+                               gs.cv_results['split2_test_rmse']], axis=0))
+
+    # test fit and train times dimensions.
+    assert gs.cv_results['mean_fit_time'].shape == (4,)  # 4 param comb.
+    assert gs.cv_results['std_fit_time'].shape == (4,)  # 4 param comb.
+    assert gs.cv_results['mean_test_time'].shape == (4,)  # 4 param comb.
+    assert gs.cv_results['std_test_time'].shape == (4,)  # 4 param comb.
+
+    assert gs.cv_results['params'] is gs.param_combinations
+
+    # assert that best parameter in gs.cv_results['rank_test_measure'] is
+    # indeed the best_param attribute.
+    best_index = np.argmin(gs.cv_results['rank_test_rmse'])
+    assert gs.cv_results['params'][best_index] == gs.best_params['rmse']
+    best_index = np.argmin(gs.cv_results['rank_test_mae'])
+    assert gs.cv_results['params'][best_index] == gs.best_params['mae']

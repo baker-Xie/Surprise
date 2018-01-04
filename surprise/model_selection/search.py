@@ -58,36 +58,67 @@ class GridSearchCV:
 
         test_measures_dicts, fit_times, test_times = zip(*out)
 
-        # test_measures_dicts is a list of dict:
+        # test_measures_dicts is a list of dict like this:
         # [{'mae': 1, 'rmse': 2}, {'mae': 2, 'rmse': 3} ...]
-        # convert it into a dict of list:
+        # E.g. for 5 splits, the first 5 dicts are for the first param
+        # combination, the next 5 dicts are for the second param combination,
+        # etc...
+        # We convert it into a dict of list:
         # {'mae': [1, 2, ...], 'rmse': [2, 3, ...]}
-        # Also, reshape each list to have 2-D arrays of shape
-        # (n_parameters_combinations, n_splits)
+        # Each list is still of size n_parameters_combinations * n_splits.
+        # Then, reshape each list to have 2-D arrays of shape
+        # (n_parameters_combinations, n_splits). This way we can easily compute
+        # the mean and std dev over all splits or over all param comb.
         test_measures = dict()
-        for m in test_measures_dicts[0]:
+        new_shape = (len(self.param_combinations), cv.n_splits)
+        for m in self.measures:
             test_measures[m] = np.asarray([d[m] for d in test_measures_dicts])
-            new_shape = (len(self.param_combinations), -1)
             test_measures[m] = test_measures[m].reshape(new_shape)
 
-        mean_measures = dict()
+        cv_results = dict()
         best_index = dict()
         best_params = dict()
         best_score = dict()
         best_estimator = dict()
         for m in self.measures:
-            mean_measures[m] = test_measures[m].mean(axis=1)
-            if m in ('mae', 'rmse'):
-                best_index[m] = mean_measures[m].argmin()
-            elif m in ('fcp', ):
-                best_index[m] = mean_measures[m].argmax()
+            # cv_results: set measures for each split and each param comb
+            for split in range(cv.n_splits):
+                cv_results['split{0}_test_{1}'.format(split, m)] = \
+                    test_measures[m][:, split]
 
+            # cv_results: set mean and std over all splits (testset) for each
+            # param comb
+            mean_measures = test_measures[m].mean(axis=1)
+            cv_results['mean_test_{}'.format(m)] = mean_measures
+            cv_results['std_test_{}'.format(m)] = test_measures[m].std(axis=1)
+
+            # cv_results: set rank of each param comb
+            indices = cv_results['mean_test_{}'.format(m)].argsort()
+            cv_results['rank_test_{}'.format(m)] = np.empty_like(indices)
+            cv_results['rank_test_{}'.format(m)][indices] = np.arange(
+                len(indices)) + 1  # sklearn starts rankings at 1 as well.
+
+            # set best_index, and best_xxxx attributes
+            if m in ('mae', 'rmse'):
+                best_index[m] = mean_measures.argmin()
+            elif m in ('fcp', ):
+                best_index[m] = mean_measures.argmax()
             best_params[m] = self.param_combinations[best_index[m]]
-            best_score[m] = mean_measures[m][best_index[m]]
+            best_score[m] = mean_measures[best_index[m]]
             best_estimator[m] = self.algo_class(**best_params[m])
 
-        self.mean_measures = mean_measures
+        # Cv results: set fit and train times (mean, std)
+        fit_times = np.array(fit_times).reshape(new_shape)
+        test_times = np.array(test_times).reshape(new_shape)
+        for s, times in zip(('fit', 'test'), (fit_times, test_times)):
+            cv_results['mean_{}_time'.format(s)] = times.mean(axis=1)
+            cv_results['std_{}_time'.format(s)] = times.std(axis=1)
+
+        # cv_results: set params key
+        cv_results['params'] = self.param_combinations
+
         self.best_index = best_index
         self.best_params = best_params
         self.best_score = best_score
         self.best_estimator = best_estimator
+        self.cv_results = cv_results
