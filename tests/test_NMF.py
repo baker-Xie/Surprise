@@ -54,22 +54,22 @@ def test_NMF_parameters():
     assert rmse_default != rmse_reg_qi
 
     # reg_bu
-    algo = NMF(n_factors=1, n_epochs=1, reg_bu=1)
+    algo = NMF(n_factors=1, n_epochs=1, reg_bu=1, biased=True)
     rmse_reg_bu = cross_validate(algo, data, ['rmse'], pkf)['test_rmse']
     assert rmse_default != rmse_reg_bu
 
     # reg_bi
-    algo = NMF(n_factors=1, n_epochs=1, reg_bi=1)
+    algo = NMF(n_factors=1, n_epochs=1, reg_bi=1, biased=True)
     rmse_reg_bi = cross_validate(algo, data, ['rmse'], pkf)['test_rmse']
     assert rmse_default != rmse_reg_bi
 
     # lr_bu
-    algo = NMF(n_factors=1, n_epochs=1, lr_bu=1)
+    algo = NMF(n_factors=1, n_epochs=1, lr_bu=1, biased=True)
     rmse_lr_bu = cross_validate(algo, data, ['rmse'], pkf)['test_rmse']
     assert rmse_default != rmse_lr_bu
 
     # lr_bi
-    algo = NMF(n_factors=1, n_epochs=1, lr_bi=1)
+    algo = NMF(n_factors=1, n_epochs=1, lr_bi=1, biased=True)
     rmse_lr_bi = cross_validate(algo, data, ['rmse'], pkf)['test_rmse']
     assert rmse_default != rmse_lr_bi
 

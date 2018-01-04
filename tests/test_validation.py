@@ -5,8 +5,6 @@ Module for testing the validation module.
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 import os
-import tempfile
-import shutil
 
 from surprise import NormalPredictor
 from surprise import Dataset
@@ -16,7 +14,7 @@ from surprise import model_selection as ms
 
 def test_cross_validate():
 
-    # First test with a specified CV iterator. Also dump file.
+    # First test with a specified CV iterator.
     current_dir = os.path.dirname(os.path.realpath(__file__))
     folds_files = [(current_dir + '/custom_train',
                     current_dir + '/custom_test')]
@@ -27,10 +25,8 @@ def test_cross_validate():
 
     algo = NormalPredictor()
     pkf = ms.PredefinedKFold()
-    tmp_dir = tempfile.mkdtemp()  # create tmp dir
     ret = ms.cross_validate(algo, data, measures=['rmse', 'mae'], cv=pkf,
-                            with_dump=True, dump_dir=tmp_dir, verbose=2)
-    shutil.rmtree(tmp_dir)  # remove tmp dir
+                            verbose=2)
     assert len(ret['test_rmse']) == 1
     assert len(ret['test_mae']) == 1
     assert len(ret['fit_time']) == 1
