@@ -18,7 +18,7 @@ class Reader():
     arbitrarily defined (see below).  brackets indicate that the timestamp
     field is optional.
 
-    For each built-in dataset, Surprise also provide predefined readers which
+    For each built-in dataset, Surprise also provides predefined readers which
     are useful if you want to use a custom dataset that has the same format as
     a built-in one (see the ``name`` parameter).
 

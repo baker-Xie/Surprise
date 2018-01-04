@@ -123,11 +123,13 @@ some other will use/return an inner id.
 
 Raw ids are ids as defined in a rating file or in a pandas dataframe. They can
 be strings or numbers. Note though that if the ratings were read from a file
-which is the standard scenario, they are represented as strings (see e.g.
-:ref:`here <train_on_whole_trainset>`).
+which is the standard scenario, they are represented as strings. **This is
+important to know if you're using e.g.** :meth:`predict()
+<surprise.prediction_algorithms.algo_base.AlgoBase.predict>` **or other methods
+that accept raw ids as parameters.**
 
-On trainset creation, each raw id is mapped to a unique
-integer called inner id, which is a lot more suitable for `Surprise
+On trainset creation, each raw id is mapped to a unique integer called inner
+id, which is a lot more suitable for `Surprise
 <https://nicolashug.github.io/Surprise/>`_ to manipulate. Conversions between
 raw and inner ids can be done using the :meth:`to_inner_uid()
 <surprise.Trainset.to_inner_uid>`, :meth:`to_inner_iid()

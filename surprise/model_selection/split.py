@@ -40,6 +40,7 @@ def get_cv(cv):
 
 
 class KFold():
+    '''Blabla'''
 
     def __init__(self, n_splits=5, random_state=None, shuffle=True):
 
@@ -48,6 +49,7 @@ class KFold():
         self.random_state = random_state
 
     def split(self, data):
+        'blabl'
 
         if self.n_splits > len(data.raw_ratings) or self.n_splits < 2:
             raise ValueError('Incorrect value for n_splits={0}. '
@@ -131,6 +133,7 @@ class ShuffleSplit():
         return int(train_size), int(test_size)
 
     def split(self, data):
+        'blabl'
 
         test_size, train_size = self.validate_train_test_sizes(
             self.test_size, self.train_size, len(data.raw_ratings))
@@ -156,12 +159,14 @@ class ShuffleSplit():
 
 def train_test_split(data, test_size=.2, train_size=None, random_state=None,
                      shuffle=True):
+    '''Blabla'''
     ss = ShuffleSplit(n_splits=1, test_size=test_size, train_size=train_size,
                       random_state=random_state, shuffle=shuffle)
     return next(ss.split(data))
 
 
 class RepeatedKFold():
+    '''Blabla'''
 
     def __init__(self, n_splits=5, n_repeats=10, random_state=None):
 
@@ -170,6 +175,7 @@ class RepeatedKFold():
         self.n_splits = n_splits
 
     def split(self, data):
+        'blabl'
 
         rng = get_rng(self.random_state)
 
@@ -180,6 +186,7 @@ class RepeatedKFold():
 
 
 class LeaveOneOut():
+    '''Blabla'''
 
     def __init__(self, n_splits=5, random_state=None):
 
@@ -187,6 +194,7 @@ class LeaveOneOut():
         self.random_state = random_state
 
     def split(self, data):
+        'blabl'
 
         user_ratings = defaultdict(list)
         for uid, iid, r_ui, _ in data.raw_ratings:
@@ -212,8 +220,10 @@ class LeaveOneOut():
 
 
 class PredefinedKFold():
+    '''Blabla'''
 
     def split(self, data):
+        'blabl'
 
         self.n_splits = len(data.folds_files)
         for train_file, test_file in data.folds_files:

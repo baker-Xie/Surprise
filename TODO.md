@@ -5,10 +5,12 @@ TODO
   - Change examples so they use CV iterators and the new gridsearch and
     cross_validate
   - Write comments, docstring and update all docs
+  - don't forget to document train_test_split somewhere.
+  - indicate in docs that split(), folds(), evaluate() and gridsearch() are
+    deprecated
   - Update main
-  - Update README example
 
-
+* Update README example before new rewlease
 * all algorithms using random initialization should allow to define
   random_state. This is paramount for having correct gridsearch results (else
   different initializations are used for the various parameter combinations).
@@ -19,6 +21,7 @@ TODO
   it's slower.
 * Make all fit methods (for algo and GridSearch) return self. Update docs on
   building custom algorithms.
+
 * Allow incremental updates for some algorithms
 
 Done:

@@ -13,6 +13,7 @@ from .. import accuracy
 
 def cross_validate(algo, data, measures=['rmse', 'mae'], cv=None, n_jobs=-1,
                    pre_dispatch='2*n_jobs', verbose=0):
+    'bbobobob'
 
     measures = [m.lower() for m in measures]
 
@@ -68,22 +69,26 @@ def print_summary(algo, measures, test_measures, fit_times, test_times,
           algo.__class__.__name__, n_splits))
     print()
 
-    row_format = '{:<12}' * (n_splits + 2)
+    row_format = '{:<12}' + '{:<8}' * (n_splits + 2)
     s = row_format.format(
         '',
-        *['Fold {0}'.format(i + 1) for i in range(n_splits)] + ['Mean'])
+        *['Fold {0}'.format(i + 1) for i in range(n_splits)] + ['Mean'] +
+        ['Std'])
     s += '\n'
     s += '\n'.join(row_format.format(
         key.upper(),
         *['{:1.4f}'.format(v) for v in vals] +
-        ['{:1.4f}'.format(np.mean(vals))])
+        ['{:1.4f}'.format(np.mean(vals))] +
+        ['{:1.4f}'.format(np.std(vals))])
         for (key, vals) in iteritems(test_measures))
     s += '\n'
     s += row_format.format('Fit time',
                            *['{:.2f}'.format(t) for t in fit_times] +
-                           ['{:.2f}'.format(np.mean(fit_times))])
+                           ['{:.2f}'.format(np.mean(fit_times))] +
+                           ['{:.2f}'.format(np.std(fit_times))])
     s += '\n'
     s += row_format.format('Test time',
                            *['{:.2f}'.format(t) for t in test_times] +
-                           ['{:.2f}'.format(np.mean(test_times))])
+                           ['{:.2f}'.format(np.mean(test_times))] +
+                           ['{:.2f}'.format(np.std(test_times))])
     print(s)

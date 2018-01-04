@@ -94,8 +94,8 @@ class AlgoBase(object):
 
         The ``predict`` method converts raw ids to inner ids and then calls the
         ``estimate`` method which is defined in every derived class. If the
-        prediction is impossible (for whatever reason), the prediction is set
-        to the global mean of all ratings.
+        prediction is impossible (e.g. because the user and/or the item is
+        unkown), the prediction is set to the global mean of all ratings.
 
         Args:
             uid: (Raw) id of the user. See :ref:`this note<raw_inner_note>`.

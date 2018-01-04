@@ -11,6 +11,8 @@ from .validation import fit_and_score
 
 
 class GridSearchCV:
+    'blabla'
+
     def __init__(self, algo_class, param_grid, measures=['rmse', 'mae'],
                  cv=None, n_jobs=-1, pre_dispatch='2*n_jobs',
                  joblib_verbose=0):
@@ -41,6 +43,7 @@ class GridSearchCV:
                                    product(*self.param_grid.values())]
 
     def fit(self, data):
+        'blabl'
 
         cv = get_cv(self.cv)
 
