@@ -147,8 +147,8 @@ Yes, and yes. See the :ref:`user guide <load_custom>`.
 How to tune an algorithm parameters
 -----------------------------------
 
-You can tune the parameters of an algorithm with the :class:`GridSearch
-<surprise.evaluate.GridSearch>` class as described :ref:`here
+You can tune the parameters of an algorithm with the :class:`GridSearchCV
+<surprise.model_selection.search.GridSearchCV>` class as described :ref:`here
 <tuning_algorithm_parameters>`. After the tuning, you may want to have an
 :ref:`unbiased estimate of your algorithm performances
 <unbiased_estimate_after_tuning>`.
@@ -165,7 +165,7 @@ with the :meth:`test()
 .. literalinclude:: ../../examples/evaluate_on_trainset.py
     :caption: From file ``examples/evaluate_on_trainset.py``
     :name: evaluate_on_trainset.py
-    :lines: 9-24
+    :lines: 9-25
 
 Check out the example file for more usage examples.
 

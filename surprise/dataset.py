@@ -177,8 +177,6 @@ class Dataset:
     def folds(self):
         """Generator function to iterate over the folds of the Dataset.
 
-        See :ref:`User Guide <iterate_over_folds>` for usage.
-
         Yields:
             tuple: :class:`Trainset <surprise.Trainset>` and testset
             of current fold.

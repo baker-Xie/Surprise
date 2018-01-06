@@ -9,6 +9,9 @@ Getting Started
 Basic usage
 -----------
 
+Automatic cross-validation
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 `Surprise <https://nicolashug.github.io/Surprise/>`_ has a set of built-in
 :ref:`algorithms<prediction_algorithms>` and :ref:`datasets <dataset>` for you
 to play with. In its simplest form, it only takes a few lines of code to
@@ -49,21 +52,45 @@ and computes some :mod:`accuracy <surprise.accuracy>` measures. We are here
 using a classical 5-fold cross-validation, but fancier iterators can be used
 (see :ref:`here <cross_validation_iterators_api>`).
 
---------------
+Train-test split and the fit() method
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO: make example with train_test_split here.
-Then say that if train and test files are already defined, refer to
-load_from_folds. Then fo on to train on whole trainset.
+.. _train_test_split_example:
+
+If you don't want to run a full cross-validation procedure, you can use the
+:func:`train_test_split() <surprise.model_selection.split.train_test_split>`
+to sample a trainset and a testset with given sizes, and use the :mod:`accuracy
+metric<surprise.accuracy>` of your chosing. You'll need to use the :meth:`fit()
+<surprise.prediction_algorithms.algo_base.AlgoBase.fit>` method which will
+train the algorithm on the trainset, and the :meth:`test()
+<surprise.prediction_algorithms.algo_base.AlgoBase.test>` method which will
+return the predictions made from the testset:
+
+.. literalinclude:: ../../examples/train_test_split.py
+    :caption: From file ``examples/train_test_split.py``
+    :name: train_test_split.py
+    :lines: 8-
+
+Result:
+
+.. parsed-literal::
+
+    RMSE: 0.9411
+
+In some cases, your trainset and testset are already defined by some files.
+Please refer to :ref:`this section <load_from_folds_example>` to handle such cases.
+
 
 .. _train_on_whole_trainset:
+
+Train on a whole trainset and the predict() method
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Obviously, we could also simply fit our algorithm to the whole dataset, rather
 than running cross-validation. This can be done by using the
 :meth:`build_full_trainset()
 <surprise.dataset.DatasetAutoFolds.build_full_trainset>` method which will
-build a :class:`trainset <surprise.Trainset>` object, and the :meth:`fit()
-<surprise.prediction_algorithms.algo_base.AlgoBase.fit>` method which will
-train the algorithm on the trainset:
+build a :class:`trainset <surprise.Trainset>` object:
 
 .. literalinclude:: ../../examples/predict_ratings.py
     :caption: From file ``examples/predict_ratings.py``
@@ -94,13 +121,13 @@ The result should be:
     the dataset we have used has been read from a file, the raw ids are strings
     (even if they represent numbers).
 
-We have here used a built-in datasets but you can of course use your own, which
-is explained in the next section.
+We have so far used a built-in dataset, but you can of course use your own.
+This is explained in the next section.
 
 .. _load_custom:
 
-Load a custom dataset
----------------------
+Use a custom dataset
+--------------------
 
 `Surprise <https://nicolashug.github.io/Surprise/>`_ has a set of  builtin
 :ref:`datasets <dataset>`, but you can of course use a custom dataset.
@@ -155,14 +182,16 @@ dataframe.
       4       2       1  user_foo
 
 
-Using cross-validation iterators
---------------------------------
+.. _use_cross_validation_iterators:
 
-We have so far used the :func:`cross_validate()
+Use cross-validation iterators
+------------------------------
+
+For cross-validation, we can use the :func:`cross_validate()
 <surprise.model_selection.validation.cross_validate>`
-function that does all the hard work for us. We could also instanciate a
-cross-validation iterator, and make predictions over each split using the
-``split()`` method of the iterator, and the
+function that does all the hard work for us. But for a better control, we can
+also instanciate a cross-validation iterator, and make predictions over each
+split using the ``split()`` method of the iterator, and the
 :meth:`test()<surprise.prediction_algorithms.algo_base.AlgoBase.test>` method
 of the algorithm. Here is an example where we use a classical K-fold
 cross-validation procedure with 3 splits:
@@ -181,6 +210,8 @@ Result could be, e.g.:
 
 Other cross-validation iterator can be used, like LeaveOneOut or ShuffleSplit.
 See all the available iterators :ref:`here <cross_validation_iterators_api>`.
+
+---------------------
 
 .. _load_from_folds_example:
 
@@ -201,66 +232,49 @@ needs to be a ``list``.
 
 .. _tuning_algorithm_parameters:
 
-Tune algorithm parameters with GridSearch
------------------------------------------
+Tune algorithm parameters with GridSearchCV
+-------------------------------------------
 
-The :func:`evaluate() <surprise.evaluate.evaluate>` function gives us the
-results on one set of parameters given to the algorithm. If the user wants
-to try the algorithm on a different set of parameters, the
-:class:`GridSearch <surprise.evaluate.GridSearch>` class comes to the rescue.
-Given a ``dict`` of parameters, this
-class exhaustively tries all the combination of parameters and helps get the
-best combination for an accuracy measurement. It is analogous to
-`GridSearchCV <http://scikit-learn.org/stable/modules/generated/sklearn.model
-_selection.GridSearchCV.html>`_ from scikit-learn.
+The :func:`cross_validate()
+<surprise.model_selection.validation.cross_validate>` function reports accuracy
+metric over a cross-validation procedure for a given set of parameters.  If you
+want to know which parameter combination yields the best results, the
+:class:`GridSearchCV <surprise.model_selection.search.GridSearchCV>` class
+comes to the rescue.  Given a ``dict`` of parameters, this class exhaustively
+tries all the combinations of parameters and reports the best parameters for any
+accuracy measure (averaged over the different splits). It is heavily inspired
+from scikit-learn's `GridSearchCV
+<http://scikit-learn.org/stable/modules/generated/sklearn.model
+_selection.GridSearchCV.html>`_.
 
-For instance, suppose that we want to tune the parameters of the
-:class:`SVD <surprise.prediction_algorithms.matrix_factorization.SVD>`. Some of
-the parameters of this algorithm are ``n_epochs``, ``lr_all`` and ``reg_all``.
-Thus we define a parameters grid as follows
+Here is an example where we try different values for parameters ``n_epochs``,
+``lr_all`` and ``reg_all`` of the :class:`SVD
+<surprise.prediction_algorithms.matrix_factorization.SVD>` algorithm.
 
 .. literalinclude:: ../../examples/grid_search_usage.py
     :caption: From file ``examples/grid_search_usage.py``
     :name: grid_search_usage.py
-    :lines: 13-14
+    :lines: 9-26
 
-Next we define a :class:`GridSearch <surprise.evaluate.GridSearch>` instance
-and give it the class
-:class:`SVD <surprise.prediction_algorithms.matrix_factorization.SVD>` as an
-algorithm, and ``param_grid``. We will compute both the
-RMSE and FCP values for all the combination. Thus the following definition:
+Result:
+
+.. parsed-literal::
+
+    0.961300130118
+    {'n_epochs': 10, 'lr_all': 0.005, 'reg_all': 0.4}
+
+We are here evaluating the average RMSE and MAE over a 3-fold cross-validation
+procedure, but any :ref:`cross-validation iterator
+<cross_validation_iterators_api>` can used.
+
+Once ``fit()`` has been called, the ``best_estimator`` attribute gives us an
+algorithm instance with the optimal set of parameters, which can be used how we
+please:
 
 .. literalinclude:: ../../examples/grid_search_usage.py
     :caption: From file ``examples/grid_search_usage.py``
     :name: grid_search_usage2.py
-    :lines: 16
-
-Now that :class:`GridSearch <surprise.evaluate.GridSearch>` instance is ready,
-we can evaluate the algorithm on any data with the
-:meth:`GridSearch.evaluate()<surprise.evaluate.GridSearch.evaluate>` method,
-exactly like with the regular
-:func:`evaluate() <surprise.evaluate.evaluate>` function:
-
-.. literalinclude:: ../../examples/grid_search_usage.py
-    :caption: From file ``examples/grid_search_usage.py``
-    :name: grid_search_usage3.py
-    :lines: 19-22
-
-Everything is ready now to read the results. For example, we get the best RMSE
-and FCP scores and parameters as follows:
-
-.. literalinclude:: ../../examples/grid_search_usage.py
-    :caption: From file ``examples/grid_search_usage.py``
-    :name: grid_search_usage4.py
-    :lines: 24-38
-
-For further analysis, we can easily read all the results in a pandas
-``DataFrame`` as follows:
-
-.. literalinclude:: ../../examples/grid_search_usage.py
-    :caption: From file ``examples/grid_search_usage.py``
-    :name: grid_search_usage5.py
-    :lines: 40-
+    :lines: 28-30
 
 .. _grid_search_note:
 .. note::
@@ -289,8 +303,13 @@ For further analysis, we can easily read all the results in a pandas
                                       'user_based': [False]}
                       }
 
+For further analysis, the ``cv_results`` attribute has all the needed
+information and can be imported in a pandas dataframe:
 
-
+.. literalinclude:: ../../examples/grid_search_usage.py
+    :caption: From file ``examples/grid_search_usage.py``
+    :name: grid_search_usage3.py
+    :lines: 33
 
 Command line usage
 ------------------

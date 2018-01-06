@@ -8,7 +8,7 @@ TODO
   - don't forget to document train_test_split somewhere.
   - indicate in docs that split(), folds(), evaluate() and gridsearch() are
     deprecated
-  - Update main
+  - Update main and command-line usage doc in getting started.rst
 
 * Update README example before new rewlease
 * all algorithms using random initialization should allow to define
@@ -20,7 +20,9 @@ TODO
   train (test does not have enough ratings for parameters to be impactful) and
   it's slower.
 * Make all fit methods (for algo and GridSearch) return self. Update docs on
-  building custom algorithms.
+  building custom algorithms, and on getting started -> gridsearch (add
+  example?).
+* Update doc of MF algo to indicate how to retrieve latent factors.
 
 * Allow incremental updates for some algorithms
 
