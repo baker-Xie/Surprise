@@ -79,9 +79,9 @@ class KFold():
 
     Args:
         n_splits(int): The number of folds.
-        random_state(int, RandomState instance from numpy, or ``None``): Determines
-            the RNG that will be used for determining the folds. If int,
-            ``random_state`` will be used as a seed for a new RNG. This is
+        random_state(int, RandomState instance from numpy, or ``None``):
+            Determines the RNG that will be used for determining the folds. If
+            int, ``random_state`` will be used as a seed for a new RNG. This is
             useful to get the same splits over multiple calls to ``split()``.
             If RandomState instance, this same instance is used as RNG. If
             ``None``, the current RNG from numpy is used. ``random_state`` is
@@ -193,8 +193,6 @@ class RepeatedKFold():
         return self.n_repeats * self.n_splits
 
 
-
-
 class ShuffleSplit():
     '''A basic cross-validation iterator with random trainsets and testsets.
 
@@ -216,9 +214,9 @@ class ShuffleSplit():
             represents the absolute number of ratings in the trainset. If
             ``None``, the value is set to the complement of the testset size.
             Default is ``None``.
-        random_state(int, RandomState instance from numpy, or ``None``): Determines
-            the RNG that will be used for determining the folds. If int,
-            ``random_state`` will be used as a seed for a new RNG. This is
+        random_state(int, RandomState instance from numpy, or ``None``):
+            Determines the RNG that will be used for determining the folds. If
+            int, ``random_state`` will be used as a seed for a new RNG. This is
             useful to get the same splits over multiple calls to ``split()``.
             If RandomState instance, this same instance is used as RNG. If
             ``None``, the current RNG from numpy is used. ``random_state`` is
@@ -337,9 +335,9 @@ def train_test_split(data, test_size=.2, train_size=None, random_state=None,
             represents the absolute number of ratings in the trainset. If
             ``None``, the value is set to the complement of the testset size.
             Default is ``None``.
-        random_state(int, RandomState instance from numpy, or ``None``): Determines
-            the RNG that will be used for determining the folds. If int,
-            ``random_state`` will be used as a seed for a new RNG. This is
+        random_state(int, RandomState instance from numpy, or ``None``):
+            Determines the RNG that will be used for determining the folds. If
+            int, ``random_state`` will be used as a seed for a new RNG. This is
             useful to get the same splits over multiple calls to ``split()``.
             If RandomState instance, this same instance is used as RNG. If
             ``None``, the current RNG from numpy is used. ``random_state`` is
@@ -364,9 +362,9 @@ class LeaveOneOut():
 
     Args:
         n_splits(int): The number of folds.
-        random_state(int, RandomState instance from numpy, or ``None``): Determines
-            the RNG that will be used for determining the folds. If int,
-            ``random_state`` will be used as a seed for a new RNG. This is
+        random_state(int, RandomState instance from numpy, or ``None``):
+            Determines the RNG that will be used for determining the folds. If
+            int, ``random_state`` will be used as a seed for a new RNG. This is
             useful to get the same splits over multiple calls to ``split()``.
             If RandomState instance, this same instance is used as RNG. If
             ``None``, the current RNG from numpy is used. ``random_state`` is
@@ -421,6 +419,7 @@ class LeaveOneOut():
     def get_n_folds(self):
 
         return self.n_splits
+
 
 class PredefinedKFold():
     '''A cross-validation iterator to when a dataset has been loaded with the
