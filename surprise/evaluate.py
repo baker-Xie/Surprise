@@ -23,10 +23,18 @@ from .dump import dump
 
 def evaluate(algo, data, measures=['rmse', 'mae'], with_dump=False,
              dump_dir=None, verbose=1):
-    """Evaluate the performance of the algorithm on given data.
+    """
+    .. warning::
+        Deprecated since version 1.05.  Use :func:`cross_validate
+        <surprise.model_selection.validation.cross_validate>` instead. This
+        function will be removed in later versions.
+
+    Evaluate the performance of the algorithm on given data.
 
     Depending on the nature of the ``data`` parameter, it may or may not
     perform cross validation.
+
+
 
     Args:
         algo(:obj:`AlgoBase \
@@ -108,7 +116,13 @@ def evaluate(algo, data, measures=['rmse', 'mae'], with_dump=False,
 
 
 class GridSearch:
-    """The :class:`GridSearch` class, used to evaluate the performance of an
+    """
+    .. warning::
+        Deprecated since version 1.05. Use :func:`GridSearchCV
+        <surprise.model_selection.search.GridSearchCV>` instead. This
+        class will be removed in later versions.
+    
+    The :class:`GridSearch` class, used to evaluate the performance of an
     algorithm on various combinations of parameters, and extract the best
     combination. It is analogous to `GridSearchCV
     <http://scikit-learn.org/stable/modules/generated/sklearn.

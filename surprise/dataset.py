@@ -175,7 +175,13 @@ class Dataset:
         return raw_ratings
 
     def folds(self):
-        """Generator function to iterate over the folds of the Dataset.
+        """
+        Generator function to iterate over the folds of the Dataset.
+
+        .. warning::
+            Deprecated since version 1.05. Use :ref:`cross-validation iterators
+            <use_cross_validation_iterators>` instead. This method will be
+            removed in later versions.
 
         Yields:
             tuple: :class:`Trainset <surprise.Trainset>` and testset
@@ -317,7 +323,13 @@ class DatasetAutoFolds(Dataset):
         return k_folds(self.raw_ratings, self.n_folds)
 
     def split(self, n_folds=5, shuffle=True):
-        """Split the dataset into folds for future cross-validation.
+        """
+        Split the dataset into folds for future cross-validation.
+
+        .. warning::
+            Deprecated since version 1.05. Use :ref:`cross-validation iterators
+            <use_cross_validation_iterators>` instead. This method will be
+            removed in later versions.
 
         If you forget to call :meth:`split`, the dataset will be automatically
         shuffled and split for 5-fold cross-validation.

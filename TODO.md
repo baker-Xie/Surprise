@@ -2,12 +2,7 @@ TODO
 ====
 
 - CV iterators:
-  - Change examples so they use CV iterators and the new gridsearch and
-    cross_validate
   - Write comments, docstring and update all docs
-  - don't forget to document train_test_split somewhere.
-  - indicate in docs that split(), folds(), evaluate() and gridsearch() are
-    deprecated
   - Update main and command-line usage doc in getting started.rst
 
 * Update README example before new rewlease
@@ -24,6 +19,7 @@ TODO
   example?).
 * Update doc of MF algo to indicate how to retrieve latent factors.
 
+* check conda forge
 * Allow incremental updates for some algorithms
 
 Done:
@@ -38,6 +34,10 @@ Done:
   - Add deprecation warnings for evaluate and GridSearch()
   - handle the cv_results attribute for grid search
   - (re)write all verbose settings for gridsearch and cross_validate
+  - Change examples so they use CV iterators and the new gridsearch and
+    cross_validate
+  - indicate in docs that split(), folds(), evaluate() and gridsearch() are
+    deprecated
 * Allow to change data folder from env variable
 * Complete FAQ
 * Change the dumping machinery to be more consistent 
