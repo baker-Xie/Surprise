@@ -1,10 +1,8 @@
 TODO
 ====
 
-- CV iterators:
-  - Update main and command-line usage doc in getting started.rst
 
-* Update README example before new rewlease
+* Update README example before new rewlease, as well as computation times
 * all algorithms using random initialization should allow to define
   random_state. This is paramount for having correct gridsearch results (else
   different initializations are used for the various parameter combinations).
@@ -40,6 +38,7 @@ Done:
   - indicate in docs that split(), folds(), evaluate() and gridsearch() are
     deprecated
   - Write comments, docstring and update all docs
+  - Update main and command-line usage doc in getting started.rst
 * Allow to change data folder from env variable
 * Complete FAQ
 * Change the dumping machinery to be more consistent 
