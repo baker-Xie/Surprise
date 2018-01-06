@@ -61,7 +61,7 @@ class Dataset:
         If the dataset has not already been loaded, it will be downloaded and
         saved. You will have to split your dataset using the :meth:`split
         <DatasetAutoFolds.split>` method. See an example in the :ref:`User
-        Guide <load_builtin_example>`.
+        Guide <cross_validate_example>`.
 
         Args:
             name(:obj:`string`): The name of the built-in dataset to load.

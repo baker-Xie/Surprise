@@ -121,7 +121,7 @@ class GridSearch:
         Deprecated since version 1.05. Use :func:`GridSearchCV
         <surprise.model_selection.search.GridSearchCV>` instead. This
         class will be removed in later versions.
-    
+
     The :class:`GridSearch` class, used to evaluate the performance of an
     algorithm on various combinations of parameters, and extract the best
     combination. It is analogous to `GridSearchCV

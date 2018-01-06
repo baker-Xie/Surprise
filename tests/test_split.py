@@ -277,7 +277,7 @@ def test_LeaveOneOut():
 
     loo = LeaveOneOut()
     with pytest.raises(ValueError):
-        next(loo.split(data))  # Each user only has 1 item
+        next(loo.split(data))  # Each user only has 1 item so trainsets fail
 
     reader = Reader('ml-100k')
     custom_dataset_path = (os.path.dirname(os.path.realpath(__file__)) +

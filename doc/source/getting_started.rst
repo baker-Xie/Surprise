@@ -4,10 +4,10 @@ Getting Started
 ===============
 
 
-.. _load_builtin_example:
-
 Basic usage
 -----------
+
+.. _cross_validate_example:
 
 Automatic cross-validation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -310,6 +310,32 @@ information and can be imported in a pandas dataframe:
     :caption: From file ``examples/grid_search_usage.py``
     :name: grid_search_usage3.py
     :lines: 33
+
+In our example, the ``cv_results`` attribute looks like this:
+
+.. parsed-literal::
+
+    'split0_test_rmse':   [1.0, 1.01, 0.98, 0.99, 0.98, 0.99, 0.97, 0.98]
+    'split1_test_rmse':   [1.0, 1.0, 0.97, 0.98, 0.98, 0.99, 0.96, 0.97]
+    'split2_test_rmse':   [0.99, 1.0, 0.97, 0.98, 0.97, 0.98, 0.96, 0.97]
+    'mean_test_rmse':     [1.0, 1.0, 0.97, 0.98, 0.98, 0.99, 0.96, 0.97]
+    'std_test_rmse':      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    'rank_test_rmse':     [7 8 3 5 4 6 1 2]
+    'split0_test_mae':    [0.81, 0.82, 0.78, 0.8, 0.79, 0.8, 0.78, 0.79]
+    'split1_test_mae':    [0.81, 0.82, 0.78, 0.79, 0.79, 0.8, 0.77, 0.79]
+    'split2_test_mae':    [0.8, 0.81, 0.78, 0.79, 0.78, 0.79, 0.77, 0.78]
+    'mean_test_mae':      [0.81, 0.81, 0.78, 0.79, 0.79, 0.8, 0.77, 0.78]
+    'std_test_mae':       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    'rank_test_mae':      [7 8 2 5 4 6 1 3]
+    'mean_fit_time':      [1.5, 1.58, 1.58, 1.51, 2.99, 3.01, 3.05, 3.06]
+    'std_fit_time':       [0.02, 0.03, 0.05, 0.01, 0.02, 0.02, 0.05, 0.04]
+    'mean_test_time':     [0.45, 0.47, 0.44, 0.45, 0.44, 0.47, 0.47, 0.31]
+    'std_test_time':      [0.0, 0.04, 0.01, 0.0, 0.01, 0.04, 0.03, 0.09]
+    'params':             [{'n_epochs': 5, 'lr_all': 0.002, 'reg_all': 0.4}, {'n_epochs': 5, 'lr_all': 0.002, 'reg_all': 0.6}, {'n_epochs': 5, 'lr_all': 0.005, 'reg_all': 0.4}, {'n_epochs': 5, 'lr_all': 0.005, 'reg_all': 0.6}, {'n_epochs': 10, 'lr_all': 0.002, 'reg_all': 0.4}, {'n_epochs': 10, 'lr_all': 0.002, 'reg_all': 0.6}, {'n_epochs': 10, 'lr_all': 0.005, 'reg_all': 0.4}, {'n_epochs': 10, 'lr_all': 0.005, 'reg_all': 0.6}]
+
+As you can see, each list has the same size of the number of parameter
+combination.
+
 
 Command line usage
 ------------------

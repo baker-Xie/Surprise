@@ -170,10 +170,10 @@ class AlgoBase(object):
         in the given testset.
 
         Args:
-            testset: A test set, as returned by the :meth:`folds()
-                <surprise.dataset.Dataset.folds>` method or by the
-                :meth:`build_testset()
-                <surprise.Trainset.build_testset>` method.
+            testset: A test set, as returned by a :ref:`cross-validation
+                itertor<use_cross_validation_iterators>` or by the
+                :meth:`build_testset() <surprise.Trainset.build_testset>`
+                method.
             verbose(bool): Whether to print details for each predictions.
                 Default is False.
 

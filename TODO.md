@@ -2,7 +2,6 @@ TODO
 ====
 
 - CV iterators:
-  - Write comments, docstring and update all docs
   - Update main and command-line usage doc in getting started.rst
 
 * Update README example before new rewlease
@@ -19,6 +18,8 @@ TODO
   example?).
 * Update doc of MF algo to indicate how to retrieve latent factors.
 
+* make some filtering dataset tools, like remove users/items with less/more
+  than n ratings, binarize a dataset, etc...
 * check conda forge
 * Allow incremental updates for some algorithms
 
@@ -38,6 +39,7 @@ Done:
     cross_validate
   - indicate in docs that split(), folds(), evaluate() and gridsearch() are
     deprecated
+  - Write comments, docstring and update all docs
 * Allow to change data folder from env variable
 * Complete FAQ
 * Change the dumping machinery to be more consistent 
